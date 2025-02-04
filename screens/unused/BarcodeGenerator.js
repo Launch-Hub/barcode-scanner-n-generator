@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { View, Platform, PermissionsAndroid, Text, Dimensions } from 'react-native';
 import { Button, Icon, Input, Dialog } from '@rneui/themed';
-import styles from './../styles/Style'
+import styles from '../../styles/Style'
 import Barcode from '@kichiyaki/react-native-barcode-generator';
 import Share from 'react-native-share'
 import RNFetchBlob from 'rn-fetch-blob'

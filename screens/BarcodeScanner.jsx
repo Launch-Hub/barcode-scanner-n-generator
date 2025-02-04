@@ -2,7 +2,7 @@ import React, {useState, useRef} from 'react';
 import {View, Dimensions, Text} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {Button, Dialog} from '@rneui/themed';
-import styles from './../styles/Style';
+import styles from '../styles/Style';
 import {RNCamera} from 'react-native-camera';
 import {TextInput} from 'react-native-paper';
 
@@ -14,9 +14,10 @@ function BarcodeScan({navigation}) {
   const [showAlert, setShowAlert] = useState(false);
 
   const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [unit, setUnit] = useState('');
   const [note, setNote] = useState('');
+  const [unit, setUnit] = useState('');
+  const [price, setPrice] = useState('');
+  const [buyPrice, setBuyPrice] = useState('');
 
   const [json, setJson] = useState([]);
 
@@ -30,7 +31,6 @@ function BarcodeScan({navigation}) {
       setJson([...json, data]);
       alert('Item added');
     } else {
-      // alert('Barcode already exists');
       setShowAlert(true);
     }
   };
