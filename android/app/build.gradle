@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.barcode_generate_scan"
+    namespace "com.grocery_management"
     defaultConfig {
-        applicationId "com.barcode_generate_scan"
+        applicationId "com.grocery_management"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

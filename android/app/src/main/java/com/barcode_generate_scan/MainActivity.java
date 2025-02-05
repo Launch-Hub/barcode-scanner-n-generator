@@ -1,4 +1,4 @@
-package com.barcode_generate_scan;
+package com.grocery_management;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -14,7 +14,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "barcode_generate_scan";
+    return "grocery_management";
   }
 
   // react navigation

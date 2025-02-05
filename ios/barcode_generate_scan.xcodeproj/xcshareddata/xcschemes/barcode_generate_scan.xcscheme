@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "barcode_generate_scan.app"
-               BlueprintName = "barcode_generate_scan"
-               ReferencedContainer = "container:barcode_generate_scan.xcodeproj">
+               BuildableName = "grocery_management.app"
+               BlueprintName = "grocery_management"
+               ReferencedContainer = "container:grocery_management.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "barcode_generate_scanTests.xctest"
-               BlueprintName = "barcode_generate_scanTests"
-               ReferencedContainer = "container:barcode_generate_scan.xcodeproj">
+               BuildableName = "grocery_managementTests.xctest"
+               BlueprintName = "grocery_managementTests"
+               ReferencedContainer = "container:grocery_management.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "barcode_generate_scan.app"
-            BlueprintName = "barcode_generate_scan"
-            ReferencedContainer = "container:barcode_generate_scan.xcodeproj">
+            BuildableName = "grocery_management.app"
+            BlueprintName = "grocery_management"
+            ReferencedContainer = "container:grocery_management.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "barcode_generate_scan.app"
-            BlueprintName = "barcode_generate_scan"
-            ReferencedContainer = "container:barcode_generate_scan.xcodeproj">
+            BuildableName = "grocery_management.app"
+            BlueprintName = "grocery_management"
+            ReferencedContainer = "container:grocery_management.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -9,9 +9,10 @@ export const fetchProducts = async filter => {
 
   if (filter?.id) params.append('id', filter.id);
   if (filter?.barcode) params.append('barcode', filter.barcode);
+  if (filter?.searchTerm) params.append('searchTerm', filter.searchTerm);
   if (filter?.name) params.append('name', filter.name);
-  if (filter?.fromPrice) params.append('fromPrice', filter.fromPrice.toString());
-  if (filter?.toPrice) params.append('toPrice', filter.toPrice.toString());
+  if (filter?.fromPrice) params.append('fromPrice', parseInt(filter.fromPrice));
+  if (filter?.toPrice) params.append('toPrice', parseInt(filter.toPrice));
 
   const response = await api.get(`/Products/search?${params.toString()}`);
   return response.data;
@@ -33,5 +34,6 @@ export const updateProduct = async (id, product) => {
 };
 
 export const deleteProduct = async id => {
-  await api.delete(`/Products/${id}`);
+  const response = await api.delete(`/Products/${id}`);
+  return response.data;
 };

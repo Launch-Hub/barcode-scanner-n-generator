@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface barcode_generate_scanTests : XCTestCase
+@interface grocery_managementTests : XCTestCase
 
 @end
 
-@implementation barcode_generate_scanTests
+@implementation grocery_managementTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {

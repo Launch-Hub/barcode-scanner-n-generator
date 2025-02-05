@@ -12,7 +12,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'barcode_generate_scan' do
+target 'grocery_management' do
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -34,7 +34,7 @@ target 'barcode_generate_scan' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'barcode_generate_scanTests' do
+  target 'grocery_managementTests' do
     inherit! :complete
     # Pods for testing
   end

@@ -6,7 +6,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleName = @"barcode_generate_scan";
+  self.moduleName = @"grocery_management";
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 

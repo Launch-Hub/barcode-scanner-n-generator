@@ -1,4 +1,4 @@
-package com.barcode_generate_scan;
+package com.grocery_management;
 
 import org.reactnative.camera.RNCameraPackage;
 import android.app.Application;
