@@ -1,12 +1,15 @@
 import React, {useState} from 'react';
-import {View, Dimensions, Text, SafeAreaView} from 'react-native';
+import {View, Dimensions, Text, SafeAreaView, StyleSheet} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {Button, Dialog} from '@rneui/themed';
 import {RNCamera} from 'react-native-camera';
 import {TextInput} from 'react-native-paper';
 import styles from '../styles';
+import {Camera, useCameraDevice, useCodeScanner} from 'react-native-vision-camera';
 
 function BarcodeScan({navigation}) {
+  const device = useCameraDevice('back');
+
   const [flash, setFlash] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -21,10 +24,10 @@ function BarcodeScan({navigation}) {
 
   const [json, setJson] = useState([]);
 
-  const onGoogleVisionBarcodesDetected = ({barcodes}) => {
-    if (!scanned && barcodes.length > 0 && barcodes[0].format != 'QR_CODE') {
+  const onCodeScanned = barcodes => {
+    if (!scanned && !!barcodes && barcodes[0].type != 'QR_CODE') {
       setScanned(true);
-      navigation.navigate('ProductList', {scannedCode: barcodes[0]});
+      navigation.navigate('ProductList', {scannedCode: barcodes[0].value});
       // setBarcode(barcodes[0].data);
       // setBarType(barcodes[0].format);
     }
@@ -49,9 +52,24 @@ function BarcodeScan({navigation}) {
   //   setShowAlert(false);
   // };
 
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr', 'ean-13'],
+    onCodeScanned: e => onCodeScanned(e),
+  });
+
   return (
     <SafeAreaView style={styles.container}>
-      <RNCamera
+      {device != null && (
+        <Camera
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive={!scanned}
+          codeScanner={codeScanner}
+          torch={flash ? 'on' : 'off'}
+          enableZoomGesture={true}
+        />
+      )}
+      {/* <RNCamera
         captureAudio={false}
         mirrorImage={false}
         defaultTouchToFocus
@@ -59,7 +77,7 @@ function BarcodeScan({navigation}) {
         type={RNCamera.Constants.Type.back}
         autoFocus={RNCamera.Constants.AutoFocus.on}
         flashMode={flash ? RNCamera.Constants.FlashMode.torch : RNCamera.Constants.FlashMode.off}
-        onGoogleVisionBarcodesDetected={onGoogleVisionBarcodesDetected}
+        onGoogleVisionBarcodesDetected={onCodeScanned}
         style={{
           flex: 1,
           height: Dimensions.get('window').height,
@@ -79,9 +97,9 @@ function BarcodeScan({navigation}) {
           buttonPositive: 'Ok',
           buttonNegative: 'Cancel',
         }}
-      />
+      /> */}
 
-      <View style={{height: 100}}>
+      {/* <View style={{height: 100}}>
         <Button
           title={`Flash ${flash ? 'OFF' : 'ON'}`}
           onPress={() => setFlash(!flash)}
@@ -91,7 +109,7 @@ function BarcodeScan({navigation}) {
           iconContainerStyle={styles.home.iconButtonContainer}
           buttonStyle={styles.home.button}
         />
-      </View>
+      </View> */}
 
       {/* <Dialog isVisible={scanned} onBackdropPress={() => setScanned(!scanned)}>
         <Dialog.Title titleStyle={{color: '#000', fontSize: 25}} title="Scanned Barcode:" />
