@@ -34,12 +34,12 @@ const styles = StyleSheet.create({
       borderWidth: 0,
       height: 60,
     },
-    iconButton: {
+    buttonIcon: {
       type: 'material-community',
       color: 'white',
       size: 24,
     },
-    titleButton: {
+    buttonTitle: {
       fontWeight: '700',
       fontSize: 20,
     },
@@ -50,13 +50,22 @@ const styles = StyleSheet.create({
       backgroundColor: '#FFFFFF',
       marginBottom: 16,
     },
+    buttonContainer: {
+      borderRadius: 8,
+    },
     button: {
       backgroundColor: '#1BA3F2',
       borderColor: 'transparent',
+      paddingHorizontal: 16,
+      paddingVertical: 15,
+      borderRadius: 8,
+    },
+    buttonTitle: {
+      fontWeight: '700',
+      fontSize: 20,
     },
     buttonDanger: {
       backgroundColor: '#E3141A',
-      borderColor: 'transparent',
     },
   },
 
@@ -66,7 +75,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    // margin: 30,
   },
   cameraContainer: {
     flex: 1,

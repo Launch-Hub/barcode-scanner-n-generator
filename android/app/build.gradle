@@ -88,6 +88,10 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+project.ext.react = [
+    enableHermes: true,  // Enable Hermes for better JS performance
+    enableFabric: true,  // Enable Fabric Renderer for faster UI rendering
+]
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -95,6 +99,7 @@ android {
 
     namespace "com.grocery_management"
     defaultConfig {
+        resConfigs "en"
         applicationId "com.grocery_management"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -135,8 +140,9 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
 
@@ -178,3 +184,4 @@ dependencies {
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 apply plugin: 'com.google.android.gms.strict-version-matcher-plugin'
+

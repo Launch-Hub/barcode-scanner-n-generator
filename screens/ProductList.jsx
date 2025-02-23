@@ -1,14 +1,6 @@
 import styles from '../styles';
-import React, {useEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import {Button, Dialog, SearchBar} from '@rneui/themed';
 import {fetchProducts} from '../api/products';
 import {formatCurency} from '../utils';
@@ -31,13 +23,13 @@ const Item = ({item, onPress, backgroundColor, textColor}) => (
 );
 
 function ProductList({navigation, route}) {
-  const {scannedCode, forceReload} = route?.params || {};
+  const {scannedCode, updatedItem, toast} = route?.params || {};
 
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(null);
   const [products, setProducts] = useState([]);
   const [tempProduct, setTempProduct] = useState(null);
   const [tempList, setTempList] = useState([]);
@@ -58,166 +50,145 @@ function ProductList({navigation, route}) {
     return data;
   };
 
+  const onRefresh = React.useCallback(() => {
+    asyncData(search);
+  }, []);
+
   const checkScannedCode = async () => {
-    if (!!scannedCode && scannedCode.data) {
-      const list = await fetchProducts({barcode: scannedCode.data});
-      if (!!list?.length) {
-        setTempList(list);
-        setShowAlert(true);
-      } else {
-        navigation.navigate('ProductDetail', {justCode: scannedCode.data});
-      }
+    const list = await fetchProducts({barcode: scannedCode});
+    if (!list.length) {
+      setShowAlert(true);
+    } else if (list.length == 1) {
+      navigation.navigate('ProductDetail', {product: list[0]});
+    } else {
+      setTempList(list);
+      setShowSelector(true);
     }
   };
 
-  const handleSelectProduct = product => {
-    return () => {
-      navigation.navigate('ProductDetail', {product});
-    };
-  };
-
-  const handleAfterDetected = (action, product) => {
+  const handleAfterDetected = action => {
     setShowAlert(false);
     if (action == 'update') {
-      navigation.navigate('ProductDetail', {product: product || tempProduct});
+      navigation.navigate('ProductDetail', {product: tempProduct});
     } else {
-      navigation.navigate('ProductDetail', {justCode: scannedCode.data});
+      navigation.navigate('ProductDetail', {justCode: scannedCode});
     }
   };
 
   useEffect(() => {
     asyncData();
-  }, [forceReload]);
+  }, []);
 
   useEffect(() => {
-    checkScannedCode();
-  }, [scannedCode]);
+    if (updatedItem == true) {
+      Toast.show({
+        type: 'success',
+        text1: 'Thành công!',
+        text2: toast.message,
+      });
+      !!toast.status && asyncData();
+    }
 
-  const renderItem = ({item}) => {
-    const backgroundColor = item.id === tempProduct.id ? '#6e3b6e' : '#f9c2ff';
-    const color = item.id === tempProduct.id ? 'white' : 'black';
+    !!scannedCode && checkScannedCode();
+  }, [route, scannedCode]);
 
-    return (
+  const productRenderItem = useCallback(
+    ({item}) => (
+      <TouchableOpacity
+        key={item.id}
+        style={styles.home.card}
+        onPress={() => navigation.navigate('ProductDetail', {product: item})}>
+        <Text
+          style={{
+            fontSize: 20,
+            marginBottom: 4,
+            fontWeight: 'bold',
+            color: !!item.name ? 'black' : '#aaa',
+          }}>
+          {item.name || '{Không tên}'}
+        </Text>
+        <Text style={{fontSize: 18, fontWeight: '700', marginBottom: 4}}>
+          Giá: {formatCurency(item.price)}/{item.unit}
+        </Text>
+        <Text style={{fontSize: 18, fontWeight: '500'}}>Barcode: {item.barcode}</Text>
+      </TouchableOpacity>
+    ),
+    [],
+  );
+
+  const renderItem = useCallback(
+    ({item}) => (
       <Item
         item={item}
+        backgroundColor={item.id === tempProduct?.id ? '#1BA3F2' : '#95D0F3'}
+        textColor={tempProduct?.id ? 'white' : 'black'}
         onPress={() => setTempProduct(item)}
-        backgroundColor={backgroundColor}
-        textColor={color}
       />
-    );
-  };
+    ),
+    [],
+  );
 
   return (
     <>
-      <View style={{flex: 1}}>
-        <View>
-          <SearchBar
-            disabled={loading}
-            placeholder="Tìm kiếm..."
-            style={styles.home.searchBar}
-            containerStyle={styles.home.searchBarContainer}
-            inputContainerStyle={styles.home.searchBarInputContainer}
-            onChangeText={text => setSearch(text)}
-            onBlur={asyncData}
-            lightTheme={true}
-            value={search}
-            round={true}
-          />
-          <Button
-            disabled={loading}
-            onPress={asyncData}
-            icon={{...styles.home.iconButton, name: 'refresh'}}
-          />
-        </View>
-        <ScrollView style={{flex: 1}}>
-          {loading ? (
-            <View
-              style={{
-                flex: 1,
-                height: Dimensions.get('screen').height * 0.64,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <ActivityIndicator size={'large'} />
-            </View>
-          ) : (
-            products.map((product, index) => (
-              <TouchableOpacity
-                key={product.id}
-                style={styles.home.card}
-                onPress={handleSelectProduct(product)}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    marginBottom: 4,
-                    fontWeight: 'bold',
-                    color: !!product.name ? 'black' : '#aaa',
-                  }}>
-                  {product.name || '{Không tên}'}
-                </Text>
-                <Text style={{fontSize: 18, fontWeight: '700', marginBottom: 4}}>
-                  Giá: {formatCurency(product.price)}/{product.unit}
-                </Text>
-                <Text style={{fontSize: 18, fontWeight: '500' /*marginBottom: 4*/}}>
-                  Barcode: {product.barcode}
-                </Text>
-                {/* {product.note && (
-                  <Text style={{fontSize: 16, fontStyle: 'italic', color: 'red'}}>
-                    Ghi chú: {product.note}
-                  </Text>
-                )} */}
-              </TouchableOpacity>
-            ))
-          )}
-        </ScrollView>
-
-        <View style={{display: 'flex', gap: 16, flexDirection: 'row', padding: 16}}>
+      <SafeAreaView style={{flex: 1}}>
+        <SearchBar
+          disabled={loading}
+          placeholder="Tìm kiếm sản phẩm..."
+          style={styles.home.searchBar}
+          containerStyle={styles.home.searchBarContainer}
+          inputContainerStyle={styles.home.searchBarInputContainer}
+          onBlur={() => search != null && asyncData()}
+          onChangeText={text => setSearch(text)}
+          lightTheme={true}
+          value={search}
+          round={true}
+        />
+        <FlatList
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
+          nestedScrollEnabled
+          data={products}
+          renderItem={productRenderItem}
+          keyExtractor={product => product.id}
+          initialNumToRender={5}
+          windowSize={5}
+        />
+        <View
+          style={{
+            gap: 16,
+            padding: 16,
+            display: 'flex',
+            flexDirection: 'row',
+            backgroundColor: 'white',
+          }}>
           <Button
             title="Tạo"
             onPress={() => navigation.navigate('ProductDetail')}
-            icon={{...styles.home.iconButton, name: 'plus'}}
+            icon={{...styles.home.buttonIcon, name: 'plus'}}
             containerStyle={styles.home.buttonContainer}
-            titleStyle={styles.home.titleButton}
+            titleStyle={styles.home.buttonTitle}
             buttonStyle={styles.home.button}
           />
           <Button
             title="Quét"
-            onPress={() => navigation.navigate('BarcodeScanner')}
-            icon={{...styles.home.iconButton, name: 'barcode-scan'}}
+            onPress={() => navigation.navigate('BarcodeScanner', {fromScreen: 'ProductList'})}
+            icon={{...styles.home.buttonIcon, name: 'barcode-scan'}}
             containerStyle={styles.home.buttonContainer}
-            titleStyle={styles.home.titleButton}
+            titleStyle={styles.home.buttonTitle}
             buttonStyle={styles.home.button}
           />
         </View>
-      </View>
+      </SafeAreaView>
 
       <Dialog isVisible={showAlert} onBackdropPress={() => setShowAlert(!showAlert)}>
         <Dialog.Title titleStyle={{color: '#000', fontSize: 25}} title="Thông báo!" />
-        <Text style={{fontSize: 18}}>
-          Mã vạch đã tồn tại {tempList.length} sản phẩm. Bạn có muốn tạo sản phẩm mới với cùng mã
-          vạch này?
-        </Text>
+        <Text style={{fontSize: 18}}>Mã vạch chưa tồn tại sản phẩm. Bạn có muốn tạo sản phẩm mới?</Text>
         <Dialog.Actions>
           <Button
-            title="Tạo mới"
+            title="OK"
             buttonStyle={{paddingHorizontal: 12}}
             containerStyle={{borderRadius: 8, marginStart: 8}}
             onPress={() => handleAfterDetected('create')}
             color={'primary'}
-          />
-          <Button
-            title="Cập nhật"
-            buttonStyle={{paddingHorizontal: 12}}
-            containerStyle={{borderRadius: 8}}
-            onPress={() => {
-              setShowAlert(false);
-              if (tempList.length == 1) {
-                setTempProduct(tempList[0]);
-
-                handleAfterDetected('update', tempList[0]);
-              } else setShowSelector(true);
-            }}
-            color={'warning'}
           />
         </Dialog.Actions>
       </Dialog>
@@ -226,6 +197,8 @@ function ProductList({navigation, route}) {
         <Dialog.Title titleStyle={{color: '#000', fontSize: 25}} title="Cập nhật" />
         <Text style={{fontSize: 18}}>Chọn sản phẩm cần cập nhật:</Text>
         <FlatList
+          nestedScrollEnabled
+          style={{marginVertical: 8}}
           data={tempList}
           renderItem={renderItem}
           keyExtractor={item => item.id}
@@ -234,17 +207,19 @@ function ProductList({navigation, route}) {
         <Dialog.Actions>
           <Button
             title="Huỷ"
-            buttonStyle={{paddingHorizontal: 12}}
-            containerStyle={{borderRadius: 8, marginStart: 8}}
+            titleStyle={{fontSize: 18}}
+            buttonStyle={{paddingHorizontal: 16, paddingVertical: 12}}
+            containerStyle={{borderRadius: 8, marginStart: 16}}
             onPress={() => setShowSelector(false)}
-            color={'primary'}
+            color={'error'}
           />
           <Button
-            title="Cập nhật"
-            buttonStyle={{paddingHorizontal: 12}}
+            title="Xem"
+            titleStyle={{fontSize: 18}}
+            buttonStyle={{paddingHorizontal: 16, paddingVertical: 12}}
             containerStyle={{borderRadius: 8}}
-            onPress={() => handleAfterDetected('update', tempProduct)}
-            color={'warning'}
+            onPress={() => handleAfterDetected('update')}
+            color={'primary'}
           />
         </Dialog.Actions>
       </Dialog>

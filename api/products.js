@@ -1,9 +1,9 @@
 import axios from 'axios';
+import {API_URL} from '@env';
 
-const api = axios.create({
-  baseURL: 'https://mygrocerystore-a4axcfath9g5c9d6.southeastasia-01.azurewebsites.net/api',
-});
+const api = axios.create({baseURL: API_URL});
 
+// GET
 export const fetchProducts = async filter => {
   const params = new URLSearchParams();
 
@@ -18,21 +18,25 @@ export const fetchProducts = async filter => {
   return response.data;
 };
 
+// GET
 export const fetchProductById = async id => {
   const response = await api.get(`/Products/search?id=${id}`);
   return response?.data[0] || null;
 };
 
+// POST
 export const createProduct = async product => {
   const response = await api.post('/Products', product);
   return response.data;
 };
 
+// PUT
 export const updateProduct = async (id, product) => {
   const response = await api.put(`/Products/${id}`, product);
   return response.data;
 };
 
+// DELETE
 export const deleteProduct = async id => {
   const response = await api.delete(`/Products/${id}`);
   return response.data;

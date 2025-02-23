@@ -1,53 +1,23 @@
-import React, {useState} from 'react';
-import {View, Dimensions, Text, SafeAreaView} from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {Button, Dialog} from '@rneui/themed';
-import {RNCamera} from 'react-native-camera';
-import {TextInput} from 'react-native-paper';
 import styles from '../styles';
+import React, {useState} from 'react';
+import {View, Dimensions, SafeAreaView} from 'react-native';
+import {Button} from '@rneui/themed';
+import {RNCamera} from 'react-native-camera';
 
-function BarcodeScan({navigation}) {
+const qr_format = 'QR_CODE';
+
+function BarcodeScan({navigation, route}) {
+  const {fromScreen, product} = route?.params || {fromScreen: 'ProductList'};
   const [flash, setFlash] = useState(false);
   const [scanned, setScanned] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [barcode, setBarcode] = useState('');
-  const [barType, setBarType] = useState('');
-
-  const [name, setName] = useState('');
-  const [note, setNote] = useState('');
-  const [unit, setUnit] = useState('');
-  const [price, setPrice] = useState('');
-  const [buyPrice, setBuyPrice] = useState('');
-
-  const [json, setJson] = useState([]);
 
   const onGoogleVisionBarcodesDetected = ({barcodes}) => {
-    if (!scanned && barcodes.length > 0 && barcodes[0].format != 'QR_CODE') {
+    if (!scanned && !!barcodes && barcodes.some(code => code.format != qr_format)) {
       setScanned(true);
-      navigation.navigate('ProductList', {scannedCode: barcodes[0]});
-      // setBarcode(barcodes[0].data);
-      // setBarType(barcodes[0].format);
+      const firstTrueBarcode = barcodes.find(code => code.type != qr_format);
+      navigation.navigate(fromScreen, {scannedCode: firstTrueBarcode.data, product});
     }
   };
-
-  // const handleCopyToClipboard = () => {
-  //   Clipboard.setString(JSON.stringify(json));
-  // };
-
-  // const handleAddToClipboard = () => {
-  //   const data = {name, price, unit, note, barcode};
-  //   if (json.length === 0 || !json.some(item => item.barcode === barcode)) {
-  //     setJson([...json, data]);
-  //     alert('Item added');
-  //   } else {
-  //     setShowAlert(true);
-  //   }
-  // };
-
-  // const handleOverride = () => {
-  //   setJson(json.map(e => (e.barcode === barcode ? {name, price, unit, note, barcode} : e)));
-  //   setShowAlert(false);
-  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,65 +55,13 @@ function BarcodeScan({navigation}) {
         <Button
           title={`Flash ${flash ? 'OFF' : 'ON'}`}
           onPress={() => setFlash(!flash)}
-          icon={{...styles.home.iconButton, size: 28, name: 'flash'}}
+          icon={{...styles.home.buttonIcon, size: 28, name: 'flash'}}
           containerStyle={{...styles.home.buttonContainer, marginVertical: 20}}
-          titleStyle={styles.home.titleButton}
-          iconContainerStyle={styles.home.iconButtonContainer}
+          titleStyle={styles.home.buttonTitle}
+          iconContainerStyle={styles.home.buttonIconContainer}
           buttonStyle={styles.home.button}
         />
       </View>
-
-      {/* <Dialog isVisible={scanned} onBackdropPress={() => setScanned(!scanned)}>
-        <Dialog.Title titleStyle={{color: '#000', fontSize: 25}} title="Scanned Barcode:" />
-        <Text
-          style={{marginBottom: 4, fontSize: 18}}>{`Code (format: ${barType}):\n ${barcode}`}</Text>
-        <TextInput
-          label="Name"
-          value={name}
-          onChangeText={text => setName(text)}
-          style={styles.input}
-        />
-        <TextInput
-          label="Price"
-          value={price}
-          onChangeText={text => setPrice(text)}
-          style={styles.input}
-          keyboardType="numeric"
-        />
-        <TextInput
-          label="Unit"
-          value={unit}
-          onChangeText={text => setUnit(text)}
-          style={styles.input}
-        />
-        <TextInput
-          label="Note"
-          value={note}
-          onChangeText={text => setNote(text)}
-          style={styles.input}
-        />
-        <Dialog.Actions>
-          <Button onPress={handleAddToClipboard} color={'success'} style={styles.home.button}>
-            Add Item
-          </Button>
-          <Button onPress={handleCopyToClipboard} color={'primary'} style={styles.home.button}>
-            Copy To Clipboard
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
-
-      <Dialog isVisible={showAlert} onBackdropPress={() => setShowAlert(!showAlert)}>
-        <Dialog.Title titleStyle={{color: '#000', fontSize: 25}} title="ALERT" />
-        <Text style={{fontSize: 18}}>{`Item is already existed! OVERRIDE???`}</Text>
-        <Dialog.Actions>
-          <Button onPress={() => setShowAlert(!showAlert)} color={'error'}>
-            NO
-          </Button>
-          <Button onPress={handleOverride} color={'success'}>
-            YES
-          </Button>
-        </Dialog.Actions>
-      </Dialog> */}
     </SafeAreaView>
   );
 }

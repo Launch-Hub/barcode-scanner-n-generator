@@ -32,21 +32,6 @@ A simple React Native mobile application to generate, share & scan barcode. Supp
   ```
   $ npx react-native run-ios
   ```
-
-- __Preview__
-
-  Home Screen
-
-  ![./img/Home.jpg](./img/Home.jpg)
-
-  QR Generator Screen
-  
-  ![./img/QRGenerator.jpg](./img/BarcodeGen.jpg)
-
-  QR Scanner Scanner
-  
-  ![./img/QRScanner.jpg](./img/BarcodeScan.jpg)
-
 #
 
 #### 🍔 Lintang Wisesa
