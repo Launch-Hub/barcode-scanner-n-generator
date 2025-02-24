@@ -103,8 +103,8 @@ android {
         applicationId "com.grocery_management"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 136
+        versionName "1.3.6"
         missingDimensionStrategy 'react-native-camera', 'mlkit'
     }
 

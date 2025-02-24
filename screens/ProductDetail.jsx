@@ -53,11 +53,6 @@ function ProductDetail({navigation, route}) {
       createDate: new Date().toISOString(),
     });
     if (!!resp && resp.type == 1) {
-      // Toast.show({
-      //   type: 'success',
-      //   text1: 'Thành công!',
-      //   text2: resp.message,
-      // });
       setLoading(false);
       navigation.navigate('ProductList', {updatedItem: true, toast: {message: resp.message, status: true}});
     } else {
@@ -88,11 +83,6 @@ function ProductDetail({navigation, route}) {
       buyPrice: parseInt(revertRawNumber(buyPrice)) || 0,
     });
     if (!!resp && resp.type == 1) {
-      // Toast.show({
-      //   type: 'success',
-      //   text1: 'Thành công!',
-      //   text2: resp.message,
-      // });
       setLoading(false);
       navigation.navigate('ProductList', {updatedItem: true, toast: {message: resp.message, status: true}});
     } else {
@@ -110,11 +100,6 @@ function ProductDetail({navigation, route}) {
     setShowAlert(false);
     const resp = await deleteProduct(product.id);
     if (!!resp && resp.type == 1) {
-      // Toast.show({
-      //   type: 'success',
-      //   text1: 'Thành công!',
-      //   text2: resp.message,
-      // });
       setLoading(false);
       navigation.navigate('ProductList', {updatedItem: true, toast: {message: resp.message, status: true}});
     } else {
@@ -151,7 +136,8 @@ function ProductDetail({navigation, route}) {
           value={name}
           onChangeText={text => setName(text)}
           style={styles.detail.input}
-          autoFocus
+          autoFocus={!product}
+          multiline
         />
         <TextInput
           label="Giá bán"
@@ -187,7 +173,13 @@ function ProductDetail({navigation, route}) {
             icon={{...styles.home.buttonIcon, name: 'barcode-scan'}}
           />
         </View>
-        <TextInput label="Ghi chú" value={note} onChangeText={text => setNote(text)} style={styles.detail.input} />
+        <TextInput
+          label="Ghi chú"
+          value={note}
+          onChangeText={text => setNote(text)}
+          style={styles.detail.input}
+          multiline
+        />
       </ScrollView>
       <View style={{padding: 16, display: 'flex', flexDirection: 'row', gap: 16}}>
         <Button

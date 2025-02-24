@@ -1,6 +1,6 @@
 import styles from '../styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import {Button, Dialog, SearchBar} from '@rneui/themed';
 import {fetchProducts} from '../api/products';
 import {formatCurency} from '../utils';
@@ -12,11 +12,11 @@ const Item = ({item, onPress, backgroundColor, textColor}) => (
     style={{
       padding: 16,
       borderRadius: 8,
+      marginRight: 8,
       marginVertical: 8,
-      marginHorizontal: 16,
       backgroundColor,
     }}>
-    <Text style={{color: textColor}}>
+    <Text style={{color: textColor, fontSize: 18, fontWeight: 500}}>
       {item.name} ({item.unit})
     </Text>
   </TouchableOpacity>
@@ -50,10 +50,6 @@ function ProductList({navigation, route}) {
     return data;
   };
 
-  const onRefresh = React.useCallback(() => {
-    asyncData(search);
-  }, []);
-
   const checkScannedCode = async () => {
     const list = await fetchProducts({barcode: scannedCode});
     if (!list.length) {
@@ -66,10 +62,10 @@ function ProductList({navigation, route}) {
     }
   };
 
-  const handleAfterDetected = action => {
+  const handleAfterDetected = (action, product = null) => {
     setShowAlert(false);
-    if (action == 'update') {
-      navigation.navigate('ProductDetail', {product: tempProduct});
+    if (action == 'update' && !!product) {
+      navigation.navigate('ProductDetail', {product: product});
     } else {
       navigation.navigate('ProductDetail', {justCode: scannedCode});
     }
@@ -88,7 +84,6 @@ function ProductList({navigation, route}) {
       });
       !!toast.status && asyncData();
     }
-
     !!scannedCode && checkScannedCode();
   }, [route, scannedCode]);
 
@@ -120,13 +115,28 @@ function ProductList({navigation, route}) {
     ({item}) => (
       <Item
         item={item}
-        backgroundColor={item.id === tempProduct?.id ? '#1BA3F2' : '#95D0F3'}
-        textColor={tempProduct?.id ? 'white' : 'black'}
-        onPress={() => setTempProduct(item)}
+        textColor="white"
+        backgroundColor="#1BA3F2"
+        onPress={() => handleAfterDetected('update', item)}
       />
     ),
     [],
   );
+
+  // const renderItem = useCallback(
+  //   ({item}) => (
+  //     <Item
+  //       item={item}
+  //       textColor={item.id === tempProduct?.id ? 'white' : 'black'}
+  //       backgroundColor={item.id === tempProduct?.id ? '#1BA3F2' : '#95D0F3'}
+  //       onPress={() => {
+  //         // setTempProduct(() => item);
+  //         handleAfterDetected('update', item)
+  //       }}
+  //     />
+  //   ),
+  //   [tempProduct],
+  // );
 
   return (
     <>
@@ -144,7 +154,7 @@ function ProductList({navigation, route}) {
           round={true}
         />
         <FlatList
-          refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={asyncData} />}
           nestedScrollEnabled
           data={products}
           renderItem={productRenderItem}
@@ -198,13 +208,13 @@ function ProductList({navigation, route}) {
         <Text style={{fontSize: 18}}>Chọn sản phẩm cần cập nhật:</Text>
         <FlatList
           nestedScrollEnabled
-          style={{marginVertical: 8}}
+          style={{marginVertical: 8, maxHeight: Dimensions.get('window').height / 2, overflow: 'scroll'}}
           data={tempList}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           extraData={tempProduct}
         />
-        <Dialog.Actions>
+        {/* <Dialog.Actions>
           <Button
             title="Huỷ"
             titleStyle={{fontSize: 18}}
@@ -221,7 +231,7 @@ function ProductList({navigation, route}) {
             onPress={() => handleAfterDetected('update')}
             color={'primary'}
           />
-        </Dialog.Actions>
+        </Dialog.Actions> */}
       </Dialog>
     </>
   );

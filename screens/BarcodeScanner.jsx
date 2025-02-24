@@ -14,7 +14,7 @@ function BarcodeScan({navigation, route}) {
   const onGoogleVisionBarcodesDetected = ({barcodes}) => {
     if (!scanned && !!barcodes && barcodes.some(code => code.format != qr_format)) {
       setScanned(true);
-      const firstTrueBarcode = barcodes.find(code => code.type != qr_format);
+      const firstTrueBarcode = barcodes.find(code => code.type != qr_format && !code.data.includes('http'));
       navigation.navigate(fromScreen, {scannedCode: firstTrueBarcode.data, product});
     }
   };
